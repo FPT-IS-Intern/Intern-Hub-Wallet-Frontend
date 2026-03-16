@@ -1,0 +1,275 @@
+import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { WalletService, WalletData, RelayerCheckResponse } from '../../services/wallet.service';
+import { NotificationService } from '../../services/notification.service';
+import { TransactionHistoryComponent } from '../transaction-history/transaction-history.component';
+
+
+@Component({
+  selector: 'app-wallet',
+  standalone: true,
+  imports: [CommonModule, FormsModule, TransactionHistoryComponent],
+
+  templateUrl: './wallet.component.html',
+  styleUrl: './wallet.component.scss'
+})
+export class WalletComponent implements OnInit {
+  walletData: WalletData | null = null;
+  loading = true;
+  error: string | null = null;
+
+  // Fee inputs
+  feeGas: string | null = null;
+  editFeeMode = false;
+  newFeeAmount = '';
+  updatingFee = false;
+
+  // Transfer RT inputs
+  recipientAddress = '';
+  transferAmount = '';
+  transferringRT = false;
+
+  // Mint BT inputs
+  mintAmount = '';
+  mintingBT = false;
+
+  // Relayer check inputs
+  checkAddress = '';
+  relayerCheckResult: boolean | null = null;
+  checkingRelayer = false;
+
+  // Relayer permission management
+  relayerAddress = '';
+  updatingRelayer = false;
+
+  constructor(
+    private walletService: WalletService,
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private notificationService: NotificationService
+  ) { }
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.fetchWalletData();
+      this.fetchFee();
+    }
+  }
+
+  fetchWalletData(): void {
+    this.loading = true;
+    this.walletService.getWalletInfo().subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          this.walletData = response.data;
+        } else {
+          this.error = response.message || 'Failed to fetch wallet data';
+        }
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching wallet data:', err);
+        if (err.status === 404) {
+          this.error = 'Không kết nối đc tới server blockchain';
+        } else {
+          this.error = 'Bạn chưa có tài khoản. Vui lòng đăng ký tài khoản trước khi sử dụng dịch vụ.';
+        }
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  fetchFee(): void {
+    this.walletService.getFee().subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          this.feeGas = response.data;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching fee gas:', err);
+      }
+    });
+  }
+
+  toggleEditFee(): void {
+    this.editFeeMode = !this.editFeeMode;
+    if (this.editFeeMode) {
+      // Extract number from "20%"
+      this.newFeeAmount = this.feeGas ? this.feeGas.replace('%', '') : '';
+    }
+  }
+
+  updateFee(): void {
+    const feeValue = Number(this.newFeeAmount);
+    if (!this.newFeeAmount || isNaN(feeValue)) {
+      this.notificationService.showWarning('Thông báo', 'Vui lòng nhập phần trăm phí hợp lệ (ví dụ: 20).');
+      return;
+    }
+    if (feeValue < 0 || feeValue > 100) {
+      this.notificationService.showWarning('Thông báo', 'Phí dịch vụ phải nằm trong khoảng từ 0% đến 100%.');
+      return;
+    }
+
+    this.updatingFee = true;
+    this.walletService.setFee(this.newFeeAmount).subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          this.notificationService.showSuccess('Thành công', response.message || 'Thay đổi phí thành công');
+          this.feeGas = this.newFeeAmount + "%";
+          this.editFeeMode = false;
+        } else {
+          this.notificationService.showError('Thất bại', response.message || 'Thay đổi phí không thành công.');
+        }
+        this.updatingFee = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error updating fee:', err);
+        const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API cấu hình phí.';
+        this.notificationService.showError('Lỗi', errorMsg);
+        this.updatingFee = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  checkRelayerPermission(): void {
+    if (!this.checkAddress) {
+      this.notificationService.showWarning('Thông báo', 'Vui lòng nhập địa chỉ ví cần kiểm tra.');
+      return;
+    }
+
+    this.checkingRelayer = true;
+
+    this.walletService.checkRelayerPermission(this.checkAddress).subscribe({
+      next: (response: RelayerCheckResponse) => {
+        if (response.status === 200 || response.status === undefined) {
+          if (response.data) {
+            this.notificationService.showSuccess('Kết quả', 'Tài khoản ví đang là relayer');
+          } else {
+            this.notificationService.showError('Kết quả', 'Tài khoản ví không phải là ví relayer');
+          }
+        } else {
+          this.notificationService.showError('Thất bại', 'Không thể kiểm tra quyền. Lỗi từ hệ thống: ' + response.message);
+        }
+        this.checkingRelayer = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error checking relayer permission:', err);
+        const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API. Vui lòng kiểm tra console.';
+        this.notificationService.showError('Lỗi', errorMsg);
+        this.checkingRelayer = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  setRelayerPermission(allowed: boolean): void {
+    if (!this.relayerAddress) {
+      this.notificationService.showWarning('Thông báo', 'Vui lòng nhập địa chỉ ví.');
+      return;
+    }
+
+    this.updatingRelayer = true;
+    this.walletService.grantRevokeRelayer(this.relayerAddress, allowed).subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          this.notificationService.showSuccess('Thành công', response.message || 'Thay đổi quyền relayer cho ví thành công');
+          this.relayerAddress = '';
+        } else {
+          this.notificationService.showError('Thất bại', response.message || 'Thay đổi quyền relayer không thành công.');
+        }
+        this.updatingRelayer = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error updating relayer permission:', err);
+        const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API.';
+        this.notificationService.showError('Lỗi', errorMsg);
+        this.updatingRelayer = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onTransferRT(): void {
+    if (!this.walletData?.address) {
+      this.notificationService.showError('Lỗi', 'Không tìm thấy địa chỉ ví gửi.');
+      return;
+    }
+
+    if (!this.recipientAddress) {
+      this.notificationService.showWarning('Thông báo', 'Vui lòng nhập địa chỉ người nhận.');
+      return;
+    }
+
+    const amount = Number(this.transferAmount);
+    if (!this.transferAmount || isNaN(amount) || amount <= 0) {
+      this.notificationService.showWarning('Thông báo', 'Vui lòng nhập số lượng RT hợp lệ.');
+      return;
+    }
+
+    this.transferringRT = true;
+    this.walletService.transferRT(this.walletData.address, this.recipientAddress, amount).subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          this.notificationService.showSuccess('Thành công', response.message || 'Chuyển thành công');
+          this.recipientAddress = '';
+          this.transferAmount = '';
+          this.fetchWalletData(); // Refresh balances
+        } else {
+          this.notificationService.showError('Thất bại', response.message || 'Chuyển token không thành công.');
+        }
+        this.transferringRT = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error transferring RT:', err);
+        const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API chuyển Token.';
+        this.notificationService.showError('Lỗi', errorMsg);
+        this.transferringRT = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onMintBT(): void {
+    if (!this.mintAmount || parseFloat(this.mintAmount) <= 0) {
+      this.notificationService.showWarning('Thông báo', 'Vui lòng nhập số lượng BT hợp lệ.');
+      return;
+    }
+
+    this.mintingBT = true;
+    this.walletService.mintBT(this.mintAmount).subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          this.notificationService.showSuccess('Mint thành công', 'Đã tạo thêm token thành công');
+          this.mintAmount = '';
+          this.fetchWalletData();
+        } else {
+          this.notificationService.showError('Thất bại', 'Mint BT không thành công: ' + (response.message || 'Lỗi không xác định'));
+        }
+        this.mintingBT = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error minting BT:', err);
+        const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API Mint BT.';
+        this.notificationService.showError('Lỗi', errorMsg);
+        this.mintingBT = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  formatBalance(value: string): string {
+    if (!value) return '0';
+    return parseFloat(value).toLocaleString();
+  }
+}

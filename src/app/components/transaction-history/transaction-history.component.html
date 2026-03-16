@@ -1,0 +1,116 @@
+<div class="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-amber-50 mt-8 mb-12">
+  <div class="flex items-center justify-between mb-2">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">Giao dịch</h2>
+        <p class="text-xs text-gray-400 mt-0.5">
+          {{ transactions().length }} giao dịch gần nhất trên tổng số {{ totalElements() }} giao dịch
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto mt-6">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-blue-50/50 text-gray-600 text-sm font-semibold">
+          <th class="px-4 py-3 rounded-l-xl">Mã giao dịch</th>
+          <th class="px-4 py-3">Block</th>
+          <th class="px-4 py-3">Phương thức</th>
+          <th class="px-4 py-3">Thời gian</th>
+          <th class="px-4 py-3">Từ</th>
+          <th class="px-4 py-3 text-center"></th>
+          <th class="px-4 py-3">Đến</th>
+          <th class="px-4 py-3">Số lượng</th>
+          <th class="px-4 py-3 rounded-r-xl">Phí giao dịch</th>
+        </tr>
+      </thead>
+      <tbody class="text-sm">
+        <tr *ngIf="loading()" class="animate-pulse">
+            <td colspan="8" class="px-4 py-8 text-center text-gray-400">Đang tải lịch sử giao dịch...</td>
+        </tr>
+        <tr *ngIf="!loading() && transactions().length === 0">
+            <td colspan="8" class="px-4 py-8 text-center text-gray-400">Không có giao dịch nào</td>
+        </tr>
+        <tr *ngFor="let tx of transactions()" class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group">
+          <td class="px-4 py-4 font-mono text-blue-600">
+            <div class="flex items-center gap-1.5">
+                <span class="cursor-pointer hover:underline">{{ shortenAddress(tx.hash) }}</span>
+                <button (click)="copyToClipboard(tx.hash, 'Đã sao chép mã giao dịch')" class="text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V21a2 2 0 01-2 2h-6a2 2 0 00-2-2m0-12H5a2 2 0 00-2 2v6a2 2 0 002 2h2" />
+                    </svg>
+                </button>
+            </div>
+          </td>
+          <td class="px-4 py-4 text-gray-600">{{ tx.block | number }}</td>
+          <td class="px-4 py-4 text-gray-600 font-medium">{{ translateMethod(tx.method) }}</td>
+          <td class="px-4 py-4 text-gray-600">{{ formatTime(tx.timestamp) }}</td>
+          <td class="px-4 py-4 font-mono text-blue-600">
+            <div class="flex items-center gap-1.5">
+                <span class="cursor-pointer hover:underline">{{ shortenAddress(tx.from) }}</span>
+                <button (click)="copyToClipboard(tx.from, 'Đã sao chép địa chỉ ví')" class="text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V21a2 2 0 01-2 2h-6a2 2 0 00-2-2m0-12H5a2 2 0 00-2 2v6a2 2 0 002 2h2" />
+                    </svg>
+                </button>
+            </div>
+          </td>
+          <td class="px-4 py-4 text-center">
+            <span [ngClass]="tx.direction === 'IN' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'" 
+                  class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider">
+              {{ tx.direction }}
+            </span>
+          </td>
+          <td class="px-4 py-4 font-mono text-blue-600">
+            <div class="flex items-center gap-1.5">
+                <span class="cursor-pointer hover:underline">{{ shortenAddress(tx.to) }}</span>
+                <button (click)="copyToClipboard(tx.to, 'Đã sao chép địa chỉ ví')" class="text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V21a2 2 0 01-2 2h-6a2 2 0 00-2-2m0-12H5a2 2 0 00-2 2v6a2 2 0 002 2h2" />
+                    </svg>
+                </button>
+            </div>
+          </td>
+          <td class="px-4 py-4 text-gray-800 font-medium">{{ tx.amount }}</td>
+          <td class="px-4 py-4 text-gray-500">{{ tx.txnFee }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages() > 1" class="flex items-center justify-end gap-2 mt-8 text-sm">
+    <span class="text-gray-400 mr-2">Total</span>
+    <button (click)="goToPage(page() - 1)" [disabled]="page() === 0" 
+            class="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-50 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    
+    <div class="flex items-center gap-1">
+      <button *ngFor="let p of getPages()" 
+              (click)="goToPage(p)"
+              [class.bg-blue-600]="p === page()"
+              [class.text-white]="p === page()"
+              [class.border-blue-600]="p === page()"
+              [class.hover:bg-gray-50]="p !== page()"
+              class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center transition-all">
+        {{ p + 1 }}
+      </button>
+    </div>
+
+    <button (click)="goToPage(page() + 1)" [disabled]="page() === totalPages() - 1"
+            class="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-50 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+</div>
