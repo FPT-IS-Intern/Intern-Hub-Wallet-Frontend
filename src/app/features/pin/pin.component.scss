@@ -1,0 +1,247 @@
+.pin-page-container {
+  min-height: 100vh;
+  background-color: #FCF4E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  font-family: sans-serif;
+  color: #4A4A4A;
+}
+
+.pin-card-wrapper {
+  max-width: 28rem; // max-w-md
+  width: 100%;
+}
+
+.pin-card {
+  background-color: #fff;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(225, 131, 8, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  position: relative;
+  overflow: hidden;
+
+  &.group:hover .decorative-blob {
+    transform: scale(1.1);
+  }
+
+  &.group:hover .submit-button {
+    transform: translateY(-2px);
+  }
+}
+
+.decorative-blob {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10rem;
+  height: 10rem;
+  background-color: #FFFBEB; // bg-amber-50
+  border-radius: 9999px;
+  margin-right: -5rem;
+  margin-top: -5rem;
+  opacity: 0.5;
+  transition: transform 700ms;
+}
+
+.card-content {
+  position: relative;
+  z-index: 10;
+}
+
+.header-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.logo-box {
+  width: 5rem;
+  height: 5rem;
+  background-color: #FEF3C7; // bg-amber-100
+  border-radius: 1.5rem; // rounded-3xl
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #D97706; // text-amber-600
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.icon-svg {
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+.page-title {
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: #78350F; // text-amber-900
+  letter-spacing: -0.025em;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  color: #9CA3AF; // text-gray-400
+  font-size: 0.875rem;
+  max-width: 240px;
+}
+
+.pin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-left: 0.25rem;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.pin-input {
+  width: 100%;
+  background-color: #F9FAFB; // bg-gray-50
+  border: 1px solid #F3F4F6; // border-gray-100
+  padding: 1rem 1.5rem;
+  border-radius: 1rem; // rounded-2xl
+  font-size: 1.5rem;
+  letter-spacing: 0.5em;
+  font-family: monospace;
+  text-align: center;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(225, 131, 8, 0.08); // ring-amber-500/10
+    border-color: rgba(225, 131, 8, 0.5); // border-amber-500/50
+  }
+
+  &::placeholder {
+    letter-spacing: normal;
+    font-family: sans-serif;
+    color: #D1D5DB;
+  }
+}
+
+.submit-button {
+  width: 100%;
+  background-color: #E18308;
+  color: #fff;
+  font-weight: 700;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(217, 119, 6, 0.2); // shadow-amber-600/20
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #C17007;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.75;
+    pointer-events: none;
+  }
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.spinner-icon {
+  animation: spin 1s linear infinite;
+  height: 1.25rem;
+  width: 1.25rem;
+  color: #fff;
+}
+
+.spinner-circle {
+  opacity: 0.25;
+}
+
+.spinner-path {
+  opacity: 0.75;
+}
+
+.button-text {
+  font-size: 1.125rem;
+}
+
+.security-info {
+  margin-top: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #9CA3AF;
+}
+
+.security-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.security-text {
+  font-size: 0.75rem;
+}
+
+.pin-card-wrapper {
+  animation: slideBottom 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideBottom {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+:host {
+  display: block;
+}

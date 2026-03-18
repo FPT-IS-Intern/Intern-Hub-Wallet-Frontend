@@ -179,6 +179,42 @@
 
     <!-- Operations Grid -->
     <div class="operations-grid">
+      <!-- Section: Search User Wallet -->
+      <div class="operation-card">
+        <div class="op-header">
+          <div class="op-icon-amber">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon-small" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h2 class="op-title">Tra Cứu Thông Tin Ví</h2>
+        </div>
+
+        <div class="op-space-y">
+          <div class="input-group">
+            <label class="input-label">Địa chỉ ví người dùng (Address)</label>
+            <input 
+              type="text" 
+              [(ngModel)]="searchUserAddress"
+              placeholder="Nhập địa chỉ ví cần tra cứu..." 
+              class="op-input font-mono"
+            >
+          </div>
+          <button 
+            (click)="fetchUserDetailInfo()"
+            [disabled]="searchingUser"
+            class="submit-op-btn primary-amber user-detail-btn"
+          >
+            <svg *ngIf="searchingUser" class="spinner-svg-inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="circle-opacity" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="path-opacity" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ searchingUser ? 'Đang tìm...' : 'Xem Thông Tin' }}
+          </button>
+
+        </div>
+      </div>
+      
       <!-- Section 0: Mint BT -->
       <div class="operation-card">
         <div class="op-header">
@@ -205,7 +241,7 @@
           <button 
             (click)="onMintBT()"
             [disabled]="mintingBT"
-            class="submit-op-btn primary-amber"
+            class="submit-op-btn primary-amber create-token"
           >
             <svg *ngIf="mintingBT" class="spinner-svg-inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="circle-opacity" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -262,6 +298,10 @@
         </div>
       </div>
 
+    </div>
+
+    <!-- Permission Section -->
+    <div class="permission-grid">
       <!-- Section 2: Check Permission -->
       <div class="operation-card">
         <div class="op-header">
@@ -356,4 +396,10 @@
       </div>
     </div>
   </div>
+
+  <app-user-detail-modal 
+    [walletData]="searchResultData" 
+    [show]="showUserDetailModal" 
+    (close)="showUserDetailModal = false"
+  ></app-user-detail-modal>
 </div>

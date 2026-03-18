@@ -77,6 +77,10 @@ export class WalletService {
     return this.http.post(this.grantRevokeRelayerUrl, payload);
   }
 
+  getUserInfoByAddress(address: string): Observable<WalletResponse> {
+    return this.http.get<WalletResponse>(`/wl/user/${address}`);
+  }
+
   createWallet(request: PinRequest): Observable<any> {
     return this.http.post(this.createUrl, request);
   }

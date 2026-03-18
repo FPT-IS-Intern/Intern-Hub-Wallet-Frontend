@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { WalletComponent } from './components/wallet/wallet.component';
-import { TransactionHistoryComponent } from './components/transaction-history/transaction-history.component';
-import { PinComponent } from './components/pin/pin.component';
+import { WalletComponent } from './features/wallet/wallet.component';
+import { TransactionHistoryComponent } from './features/transaction-history/transaction-history.component';
+import { PinComponent } from './features/pin/pin.component';
 
 export const routes: Routes = [
   { path: 'wallet', component: WalletComponent },

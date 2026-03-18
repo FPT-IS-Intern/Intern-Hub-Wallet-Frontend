@@ -1,20 +1,23 @@
-import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WalletService, WalletData, RelayerCheckResponse } from '../../services/wallet.service';
 import { NotificationService } from '../../services/notification.service';
 import { TransactionHistoryComponent } from '../transaction-history/transaction-history.component';
+import { UserDetailModalComponent } from '../../shared/user-detail-modal/user-detail-modal.component';
 
 
 @Component({
   selector: 'app-wallet',
   standalone: true,
-  imports: [CommonModule, FormsModule, TransactionHistoryComponent],
+  imports: [CommonModule, FormsModule, TransactionHistoryComponent, UserDetailModalComponent],
 
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.scss'
 })
 export class WalletComponent implements OnInit {
+  @ViewChild(TransactionHistoryComponent) historyComponent!: TransactionHistoryComponent;
+
   walletData: WalletData | null = null;
   loading = true;
   error: string | null = null;
@@ -42,6 +45,12 @@ export class WalletComponent implements OnInit {
   // Relayer permission management
   relayerAddress = '';
   updatingRelayer = false;
+
+  // User wallet search
+  searchUserAddress = '';
+  searchResultData: WalletData | null = null;
+  searchingUser = false;
+  showUserDetailModal = false;
 
   constructor(
     private walletService: WalletService,
@@ -122,6 +131,7 @@ export class WalletComponent implements OnInit {
           this.notificationService.showSuccess('Thành công', response.message || 'Thay đổi phí thành công');
           this.feeGas = this.newFeeAmount + "%";
           this.editFeeMode = false;
+          this.clearInputsAndRefresh();
         } else {
           this.notificationService.showError('Thất bại', response.message || 'Thay đổi phí không thành công.');
         }
@@ -158,7 +168,7 @@ export class WalletComponent implements OnInit {
           this.notificationService.showError('Thất bại', 'Không thể kiểm tra quyền. Lỗi từ hệ thống: ' + response.message);
         }
         this.checkingRelayer = false;
-        this.cdr.detectChanges();
+        this.clearInputsAndRefresh();
       },
       error: (err) => {
         console.error('Error checking relayer permission:', err);
@@ -181,7 +191,7 @@ export class WalletComponent implements OnInit {
       next: (response) => {
         if (response.status === 200) {
           this.notificationService.showSuccess('Thành công', response.message || 'Thay đổi quyền relayer cho ví thành công');
-          this.relayerAddress = '';
+          this.clearInputsAndRefresh();
         } else {
           this.notificationService.showError('Thất bại', response.message || 'Thay đổi quyền relayer không thành công.');
         }
@@ -220,9 +230,8 @@ export class WalletComponent implements OnInit {
       next: (response) => {
         if (response.status === 200) {
           this.notificationService.showSuccess('Thành công', response.message || 'Chuyển thành công');
-          this.recipientAddress = '';
-          this.transferAmount = '';
           this.fetchWalletData(); // Refresh balances
+          this.clearInputsAndRefresh();
         } else {
           this.notificationService.showError('Thất bại', response.message || 'Chuyển token không thành công.');
         }
@@ -239,6 +248,47 @@ export class WalletComponent implements OnInit {
     });
   }
 
+  isValidAddress(address: string): boolean {
+    // Ethereum address: 0x followed by 40 hex characters
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  }
+
+  fetchUserDetailInfo(): void {
+    if (!this.searchUserAddress) {
+      this.notificationService.showWarning('Thông báo', 'Vui lòng nhập địa chỉ ví cần tra cứu.');
+      return;
+    }
+
+    if (!this.isValidAddress(this.searchUserAddress)) {
+      this.notificationService.showWarning('Thông báo', 'Địa chỉ ví không hợp lệ. Vui lòng nhập địa chỉ ví bắt đầu bằng 0x và có 42 ký tự.');
+      return;
+    }
+
+    this.searchingUser = true;
+    this.walletService.getUserInfoByAddress(this.searchUserAddress).subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          this.searchResultData = response.data;
+          this.showUserDetailModal = true;
+          this.clearInputsAndRefresh();
+        } else {
+          this.searchResultData = null;
+          this.notificationService.showError('Thất bại', response.message || 'Không tìm thấy thông tin ví cho địa chỉ này.');
+        }
+        this.searchingUser = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching user detail info:', err);
+        this.searchResultData = null;
+        const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API tra cứu.';
+        this.notificationService.showError('Lỗi', errorMsg);
+        this.searchingUser = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   onMintBT(): void {
     if (!this.mintAmount || parseFloat(this.mintAmount) <= 0) {
       this.notificationService.showWarning('Thông báo', 'Vui lòng nhập số lượng BT hợp lệ.');
@@ -250,8 +300,8 @@ export class WalletComponent implements OnInit {
       next: (response) => {
         if (response.status === 200) {
           this.notificationService.showSuccess('Mint thành công', 'Đã tạo thêm token thành công');
-          this.mintAmount = '';
           this.fetchWalletData();
+          this.clearInputsAndRefresh();
         } else {
           this.notificationService.showError('Thất bại', 'Mint BT không thành công: ' + (response.message || 'Lỗi không xác định'));
         }
@@ -271,5 +321,22 @@ export class WalletComponent implements OnInit {
   formatBalance(value: string): string {
     if (!value) return '0';
     return parseFloat(value).toLocaleString();
+  }
+
+  clearInputsAndRefresh(): void {
+    // Trigger history refresh
+    if (this.historyComponent) {
+      this.historyComponent.fetchTransactions();
+    }
+    
+    // Reset inputs
+    this.newFeeAmount = '';
+    this.recipientAddress = '';
+    this.transferAmount = '';
+    this.mintAmount = '';
+    this.relayerAddress = '';
+    this.checkAddress = '';
+    this.searchUserAddress = '';
+    this.cdr.detectChanges();
   }
 }

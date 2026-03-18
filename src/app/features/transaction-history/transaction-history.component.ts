@@ -9,7 +9,7 @@ import { NotificationService } from '../../services/notification.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './transaction-history.component.html',
-  styleUrls: ['./transaction-history.component.scss']
+  styleUrl: './transaction-history.component.scss'
 })
 export class TransactionHistoryComponent implements OnInit {
   transactions = signal<Transaction[]>([]);

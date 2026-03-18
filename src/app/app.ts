@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NotificationModalComponent } from './components/shared/notification-modal/notification-modal.component';
+import { NotificationModalComponent } from './shared/notification-modal/notification-modal.component';
 
 @Component({
   selector: 'app-root',

@@ -1,6 +1,6 @@
 {
   "/wl": {
-    "target": "http://localhost:9001",
+    "target": "https://internhub-v2.bbtech.io.vn/api",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

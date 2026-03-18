@@ -1,0 +1,177 @@
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  transition: opacity 0.2s;
+}
+
+.modal-card-container {
+  position: relative;
+  width: 360px;
+  background-color: #fff;
+  border-radius: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 1.5rem;
+  text-align: center;
+  animation: fadeInUp 0.25s ease-out forwards;
+}
+
+.icon-section {
+  margin-left: auto;
+  margin-right: auto;
+  width: 6rem;
+  height: 6rem;
+  margin-bottom: 1rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-blur-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  filter: blur(24px);
+  opacity: 0.6;
+
+  .success & { background-color: #DCFCE7; }
+  .error & { background-color: #FEE2E2; }
+  .confirm & { background-color: #DBEAFE; }
+  .warning & { background-color: #FEF9C3; }
+}
+
+.icon-main {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 9999px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.success-gradient { background: linear-gradient(to bottom right, #86EFAC, #22C55E); }
+.error-gradient { background: linear-gradient(to bottom right, #F87171, #DC2626); }
+.confirm-gradient { background: linear-gradient(to bottom right, #93C5FD, #3B82F6); }
+.warning-gradient { background: linear-gradient(to bottom right, #FDE047, #EAB308); }
+
+.icon-svg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.icon-badge {
+  position: absolute;
+  bottom: -0.25rem;
+  right: -0.25rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+  &.success-badge { background-color: #DCFCE7; color: #22C55E; }
+  &.error-badge { background-color: #FEE2E2; color: #DC2626; }
+  &.confirm-badge { background-color: #DBEAFE; color: #3B82F6; }
+  &.warning-badge { background-color: #FEF9C3; color: #CA8A04; }
+}
+
+.badge-svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 0.5rem;
+}
+
+.modal-message {
+  font-size: 15px;
+  color: #6B7280;
+  margin-bottom: 2rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.button-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn-confirm, .btn-cancel {
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-cancel {
+  flex: 1;
+  border: 1px solid #D1D5DB;
+  background-color: #fff;
+  color: #4B5563;
+
+  &:hover { background-color: #F9FAFB; }
+}
+
+.btn-confirm {
+  flex: 1;
+  color: #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  &.error-btn {
+    background-color: #DC2626;
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+    &:hover { background-color: #B91C1C; }
+  }
+
+  &.primary-btn {
+    background-color: #dc7609;
+    box-shadow: 0 4px 6px -1px rgba(220, 118, 9, 0.2);
+    &:hover { background-color: #c06606; }
+  }
+
+  &.warning-btn {
+    background-color: #EAB308;
+    box-shadow: 0 4px 6px -1px rgba(234, 179, 8, 0.2);
+    &:hover { background-color: #CA8A04; }
+  }
+
+  &.success-single {
+    width: 66.666667%;
+    flex: none;
+  }
+}
+
+:host {
+  display: block;
+}
