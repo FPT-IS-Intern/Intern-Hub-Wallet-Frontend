@@ -16,7 +16,7 @@ export  const  appConfig : ApplicationConfig  =  {
       useValue : { 
         brand : "#2740B4" , 
         primary : "#006BDF" , 
-        secondary : "#9F5100" , 
+        secondary : "#f1c58b" , 
         functional : "#006BDF" , 
         utility : "#CF0026" , 
       } , 
