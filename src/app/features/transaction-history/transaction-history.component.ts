@@ -32,7 +32,6 @@ export class TransactionHistoryComponent implements OnInit {
     this.loading.set(true);
     this.transactionService.getTransactionHistory(this.page(), this.size()).subscribe({
       next: (response) => {
-        console.log('Transaction History Response:', response);
         if (response && response.status === 200 && response.data) {
           const data = response.data;
           this.transactions.set(data.data || []);
@@ -41,7 +40,6 @@ export class TransactionHistoryComponent implements OnInit {
           this.totalElements.set(data.totalElements ?? 0);
           this.totalPages.set(data.totalPages ?? 0);
           
-          console.log('Processed Transactions:', this.transactions());
         } else {
           const errMsg = response?.message || 'Unknown error';
           this.notificationService.showError('Lỗi', 'Lỗi khi tải lịch sử giao dịch: ' + errMsg);
@@ -49,7 +47,6 @@ export class TransactionHistoryComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error fetching transactions:', err);
         this.notificationService.showError('Lỗi', 'Không thể kết nối đến máy chủ.');
         this.loading.set(false);
       }
@@ -97,7 +94,6 @@ export class TransactionHistoryComponent implements OnInit {
       this.notificationService.showSuccess('Thành công', message);
 
     }).catch(err => {
-      console.error('Could not copy text: ', err);
     });
   }
 

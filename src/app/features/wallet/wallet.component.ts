@@ -79,7 +79,6 @@ export class WalletComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error fetching wallet data:', err);
         if (err.status === 404) {
           this.error = 'Không kết nối đc tới server blockchain';
         } else {
