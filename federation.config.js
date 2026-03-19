@@ -1,7 +1,7 @@
 const { withNativeFederation, shareAll } = require('@angular-architects/native-federation/config');
 
 module.exports = withNativeFederation({
-  name: 'lms',
+  name: 'wallet',
 
   exposes: {
     './routes': './src/app/app.routes.ts',
