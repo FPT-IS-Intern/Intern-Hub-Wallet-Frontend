@@ -9,6 +9,10 @@ export function getBaseUrl(): string {
     return url.endsWith('/') ? url.slice(0, -1) : url;
   }
 
+  if (typeof window !== 'undefined' && window.location.hostname.includes('bbtech.io.vn')) {
+    return 'https://internhub-v2.bbtech.io.vn/api';
+  }
+
   // Fallback for independent development (non-shell mode)
   return '';
 }
