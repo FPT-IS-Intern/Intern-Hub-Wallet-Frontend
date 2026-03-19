@@ -19,52 +19,70 @@
       "prefix": "app",
       "architect": {
         "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {},
+          "configurations": {
+            "production": {
+              "target": "Intern-Hub-Wallet-Frontend:esbuild:production"
+            },
+            "development": {
+              "target": "Intern-Hub-Wallet-Frontend:esbuild:development",
+              "dev": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "Intern-Hub-Wallet-Frontend:serve-original:development",
+            "rebuildDelay": 2000,
+            "dev": true,
+            "cacheExternalArtifacts": false,
+            "port": 4209
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        },
+        "esbuild": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/intern-hub-wallet-frontend",
-            "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "polyfills": [],
-            "optimization": {
-              "fonts": {
-                "inline": false
-              }
-            },
-            "stylePreprocessorOptions": {
-              "sass": {
-                "silenceDeprecations": ["import"]
-              }
-            },
-            "scripts": []
+            "styles": ["src/styles.scss"],
+            "polyfills": ["es-module-shims"]
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "3mb",
-                  "maximumError": "4mb"
+                  "maximumWarning": "3MB",
+                  "maximumError": "4MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2.5mb",
-                  "maximumError": "3mb"
+                  "maximumWarning": "16kB",
+                  "maximumError": "32kB"
                 }
               ],
               "outputHashing": "all"
             },
             "development": {
+              "fileReplacements": [],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -72,24 +90,21 @@
           },
           "defaultConfiguration": "production"
         },
-        "serve": {
+        "serve-original": {
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Intern-Hub-Wallet-Frontend:build:production"
+              "buildTarget": "Intern-Hub-Wallet-Frontend:esbuild:production"
             },
             "development": {
-              "buildTarget": "Intern-Hub-Wallet-Frontend:build:development",
+              "buildTarget": "Intern-Hub-Wallet-Frontend:esbuild:development",
               "proxyConfig": "proxy.conf.json"
             }
           },
-          "defaultConfiguration": "development"
-        },
-        "extract-i18n": {
-          "builder": "@angular/build:extract-i18n"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test"
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 4200
+          }
         }
       }
     }
