@@ -4,9 +4,6 @@ import { TransactionHistoryComponent } from './features/transaction-history/tran
 import { PinComponent } from './features/pin/pin.component';
 import { permissionGuard } from './core/auth/permission.guard';
 
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { authInterceptor } from './services/auth.interceptor';
-
 const walletRoutes: Routes = [
   { 
     path: '', 
@@ -25,16 +22,10 @@ const walletRoutes: Routes = [
 export const routes: Routes = [
   {
     path: '',
-    providers: [
-      provideHttpClient(withInterceptors([authInterceptor]))
-    ],
     children: walletRoutes
   },
   {
     path: 'wallet',
-    providers: [
-      provideHttpClient(withInterceptors([authInterceptor]))
-    ],
     children: walletRoutes
   }
 ];
