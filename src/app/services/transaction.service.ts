@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TransactionHistoryResponse } from '../models/transaction.model';
+import { getBaseUrl } from '../core/config/app-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransactionService {
-  private historyUrl = '/wl/transaction/history';
+  private get historyUrl() { return `${getBaseUrl()}/wl/transaction/history`; }
 
   constructor(private http: HttpClient) {}
 

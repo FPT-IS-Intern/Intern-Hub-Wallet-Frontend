@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { getBaseUrl } from '../core/config/app-config';
 
 export interface WalletData {
   address: string;
@@ -30,13 +31,13 @@ export interface PinRequest {
   providedIn: 'root'
 })
 export class WalletService {
-  private apiUrl = '/wl/user';
-  private relayerUrl = '/wl/address/allowedrelayrs';
-  private mintUrl = '/wl/blockchain/mint';
-  private feeUrl = '/wl/blockchain/fee-gas';
-  private transferUrl = '/wl/blockchain/transfer';
-  private grantRevokeRelayerUrl = '/wl/relayer';
-  private createUrl = '/wl/create';
+  private get apiUrl() { return `${getBaseUrl()}/wl/user`; }
+  private get relayerUrl() { return `${getBaseUrl()}/wl/address/allowedrelayrs`; }
+  private get mintUrl() { return `${getBaseUrl()}/wl/blockchain/mint`; }
+  private get feeUrl() { return `${getBaseUrl()}/wl/blockchain/fee-gas`; }
+  private get transferUrl() { return `${getBaseUrl()}/wl/blockchain/transfer`; }
+  private get grantRevokeRelayerUrl() { return `${getBaseUrl()}/wl/relayer`; }
+  private get createUrl() { return `${getBaseUrl()}/wl/create`; }
 
   constructor(private http: HttpClient) {}
 
@@ -78,7 +79,7 @@ export class WalletService {
   }
 
   getUserInfoByAddress(address: string): Observable<WalletResponse> {
-    return this.http.get<WalletResponse>(`/wl/user/${address}`);
+    return this.http.get<WalletResponse>(`${getBaseUrl()}/wl/user/${address}`);
   }
 
   createWallet(request: PinRequest): Observable<any> {
