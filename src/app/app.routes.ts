@@ -4,8 +4,7 @@ import { TransactionHistoryComponent } from './features/transaction-history/tran
 import { PinComponent } from './features/pin/pin.component';
 
 export const routes: Routes = [
-  { path: 'wallet', component: WalletComponent },
+  { path: '', component: WalletComponent },
   { path: 'transaction', component: TransactionHistoryComponent },
   { path: 'pin', component: PinComponent },
-  { path: '', redirectTo: 'wallet', pathMatch: 'full' }
 ];
