@@ -66,9 +66,29 @@ export class TransactionHistoryComponent implements OnInit {
   getPages(): number[] {
     const pages = [];
     const total = this.totalPages();
-    for (let i = 0; i < total; i++) {
+    const current = this.page();
+    
+    // Only show up to 5 surrounding pages to prevent UI freeze on large totalPages
+    const maxVisiblePages = 5;
+    if (total <= maxVisiblePages) {
+      for (let i = 0; i < total; i++) {
+        pages.push(i);
+      }
+      return pages;
+    }
+    
+    let start = Math.max(0, current - Math.floor(maxVisiblePages / 2));
+    let end = start + maxVisiblePages;
+    
+    if (end > total) {
+      end = total;
+      start = Math.max(0, end - maxVisiblePages);
+    }
+    
+    for (let i = start; i < end; i++) {
       pages.push(i);
     }
+    
     return pages;
   }
 
