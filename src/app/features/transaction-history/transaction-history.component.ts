@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/transaction.model';
@@ -18,6 +18,49 @@ export class TransactionHistoryComponent implements OnInit {
   totalElements = signal(0);
   totalPages = signal(0);
   loading = signal(false);
+  
+  displayRange = computed(() => {
+    if (this.totalElements() === 0) return '0-0';
+    const start = this.page() * this.size() + 1;
+    const end = Math.min((this.page() + 1) * this.size(), this.totalElements());
+    return `${start}-${end}`;
+  });
+
+  pages = computed(() => {
+    const total = this.totalPages();
+    const current = this.page();
+    const pages: (number | string)[] = [];
+
+    if (total <= 7) {
+      for (let i = 0; i < total; i++) pages.push(i);
+    } else {
+      // Always show first page
+      pages.push(0);
+
+      if (current > 2) {
+        pages.push('...');
+      }
+
+      const start = Math.max(1, current - 1);
+      const end = Math.min(total - 2, current + 1);
+
+      for (let i = start; i <= end; i++) {
+        if (!pages.includes(i)) {
+          pages.push(i);
+        }
+      }
+
+      if (current < total - 3) {
+        pages.push('...');
+      }
+
+      // Always show last page
+      if (!pages.includes(total - 1)) {
+        pages.push(total - 1);
+      }
+    }
+    return pages;
+  });
 
   constructor(
     private transactionService: TransactionService,
@@ -60,34 +103,7 @@ export class TransactionHistoryComponent implements OnInit {
     }
   }
 
-  getPages(): number[] {
-    const pages = [];
-    const total = this.totalPages();
-    const current = this.page();
-    
-    // Only show up to 5 surrounding pages to prevent UI freeze on large totalPages
-    const maxVisiblePages = 5;
-    if (total <= maxVisiblePages) {
-      for (let i = 0; i < total; i++) {
-        pages.push(i);
-      }
-      return pages;
-    }
-    
-    let start = Math.max(0, current - Math.floor(maxVisiblePages / 2));
-    let end = start + maxVisiblePages;
-    
-    if (end > total) {
-      end = total;
-      start = Math.max(0, end - maxVisiblePages);
-    }
-    
-    for (let i = start; i < end; i++) {
-      pages.push(i);
-    }
-    
-    return pages;
-  }
+  // Removed getPages() in favor of computed 'pages' signal
 
   copyToClipboard(text: string, message: string): void {
     navigator.clipboard.writeText(text).then(() => {

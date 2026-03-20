@@ -38,7 +38,36 @@
     </button>
   </div>
 
-  <div *ngIf="!loading && walletData" class="wallet-main-content">
+  <div *ngIf="!loading && hasWallet === false" class="no-wallet-container">
+    <div class="no-wallet-card">
+      <div class="no-wallet-illustration">
+        <div class="icon-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" class="no-wallet-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+          <div class="notification-dot">!</div>
+        </div>
+      </div>
+      <div class="no-wallet-info">
+        <h2 class="no-wallet-title">Hệ thống không tìm thấy ví của bạn</h2>
+        <p class="no-wallet-desc">Có vẻ như bạn chưa kích hoạt hoặc chưa được cấp ví trên hệ thống của chúng tôi.</p>
+        <div class="contact-admin">
+          <svg xmlns="http://www.w3.org/2000/svg" class="contact-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Vui lòng liên hệ quản trị viên để được hỗ trợ cấp ví mới.</span>
+        </div>
+      </div>
+      <button (click)="checkWalletExistence()" class="refresh-check-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="refresh-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Kiểm tra lại
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && hasWallet === true && walletData" class="wallet-main-content">
     <!-- Top Info Row -->
     <div class="info-row">
       
@@ -434,17 +463,6 @@
 
     <!-- Transaction History -->
     <app-transaction-history></app-transaction-history>
-
-    <!-- Quick Actions / Info -->
-    <div class="security-notice-card">
-      <!-- <div class="security-decorative"></div> -->
-      <div class="security-content">
-        <h2 class="security-title">Lưu ý bảo mật</h2>
-        <p class="security-text">
-          Đừng bao giờ chia sẻ khóa riêng hoặc cụm từ mật khẩu dự phòng của bạn với bất kỳ ai. Nhân viên hệ thống sẽ không bao giờ hỏi thông tin này. Hãy đảm bảo bạn sử dụng mật khẩu mạnh và kích hoạt bảo mật hai lớp.
-        </p>
-      </div>
-    </div>
   </div>
 
   <app-user-detail-modal 

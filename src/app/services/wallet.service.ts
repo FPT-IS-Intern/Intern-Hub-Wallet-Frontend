@@ -38,8 +38,13 @@ export class WalletService {
   private get transferUrl() { return `${getBaseUrl()}/wl/blockchain/transfer`; }
   private get grantRevokeRelayerUrl() { return `${getBaseUrl()}/wl/relayer`; }
   private get createUrl() { return `${getBaseUrl()}/wl/create`; }
+  private get checkWalletExistsUrl() { return `${getBaseUrl()}/wl/exists`; }
 
   constructor(private http: HttpClient) {}
+
+  checkWalletExists(): Observable<RelayerCheckResponse> {
+    return this.http.get<RelayerCheckResponse>(this.checkWalletExistsUrl);
+  }
 
   getWalletInfo(): Observable<WalletResponse> {
     return this.http.get<WalletResponse>(this.apiUrl);

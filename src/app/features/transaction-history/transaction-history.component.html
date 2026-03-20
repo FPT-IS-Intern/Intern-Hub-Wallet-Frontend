@@ -7,10 +7,7 @@
         </svg>
       </div>
       <div>
-        <h2 class="th-title">Giao dịch</h2>
-        <p class="th-subtitle">
-          {{ transactions().length }} giao dịch gần nhất trên tổng số {{ totalElements() }} giao dịch
-        </p>
+        <h2 class="th-title">Lịch sử giao dịch hệ thống</h2>
       </div>
     </div>
   </div>
@@ -88,28 +85,56 @@
 
   <!-- Pagination -->
   <div *ngIf="totalPages() > 1" class="pagination-wrapper">
-    <span class="pagination-total">Total</span>
-    <button (click)="goToPage(page() - 1)" [disabled]="page() === 0" 
-            class="pg-btn prev-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" class="pg-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-    </button>
-    
-    <div class="pg-pages">
-      <button *ngFor="let p of getPages()" 
-              (click)="goToPage(p)"
-              [class.active]="p === page()"
-              class="pg-num-btn">
-        {{ p + 1 }}
-      </button>
+    <div class="pagination-left">
+      <p class="th-subtitle">
+        Hiển thị {{ displayRange() }} 
+        <span class="info-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" class="info-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </span>
+      </p>
     </div>
 
-    <button (click)="goToPage(page() + 1)" [disabled]="page() === totalPages() - 1"
-            class="pg-btn next-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" class="pg-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </button>
+    <div class="pagination-right">
+      <button (click)="goToPage(page() - 1)" [disabled]="page() === 0" 
+              class="pg-btn prev-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="pg-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      
+      <div class="pg-pages">
+        <ng-container *ngFor="let p of pages()">
+          <button *ngIf="p !== '...'; else ellipsis"
+                  (click)="goToPage(+p)"
+                  [class.active]="p === page()"
+                  class="pg-num-btn">
+            {{ +p + 1 }}
+          </button>
+          <ng-template #ellipsis>
+            <span class="pg-ellipsis">...</span>
+          </ng-template>
+        </ng-container>
+      </div>
+
+      <button (click)="goToPage(page() + 1)" [disabled]="page() === totalPages() - 1"
+              class="pg-btn next-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="pg-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <div class="pg-selector">
+        <select [value]="page()" (change)="goToPage(+$any($event.target).value)">
+          <option *ngFor="let i of [].constructor(totalPages()); let idx = index" [value]="idx">
+            {{ idx + 1 }} / {{ totalPages() }}
+          </option>
+        </select>
+        <svg xmlns="http://www.w3.org/2000/svg" class="select-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+    </div>
   </div>
 </div>

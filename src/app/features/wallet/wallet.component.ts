@@ -21,6 +21,7 @@ export class WalletComponent implements OnInit {
   walletData: WalletData | null = null;
   loading = true;
   error: string | null = null;
+  hasWallet: boolean | null = null;
 
   // Fee inputs
   feeGas: string | null = null;
@@ -61,9 +62,35 @@ export class WalletComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.fetchWalletData();
-      this.fetchFee();
+      this.checkWalletExistence();
     }
+  }
+
+  checkWalletExistence(): void {
+    this.loading = true;
+    this.walletService.checkWalletExists().subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          this.hasWallet = response.data;
+          if (this.hasWallet) {
+            this.fetchWalletData();
+            this.fetchFee();
+          } else {
+            this.loading = false;
+          }
+        } else {
+          this.error = response.message || 'Lỗi kiểm tra ví';
+          this.loading = false;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error checking wallet exists:', err);
+        this.error = 'Không thể kiểm tra trạng thái ví. Vui lòng thử lại sau.';
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   fetchWalletData(): void {
