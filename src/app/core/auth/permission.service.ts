@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 
-export type PermissionAction = 'create' | 'read' | 'update' | 'delete' | 'review';
+export type PermissionAction = 'create' | 'read' | 'update' | 'delete' | 'review' | 'admin';
 
 interface TokenClaims {
   permissions?: string[] | null;

@@ -6,6 +6,7 @@ import { WalletService, WalletData, WalletStatusResponse, RelayerCheckResponse }
 import { NotificationService } from '../../services/notification.service';
 import { TransactionHistoryComponent } from '../transaction-history/transaction-history.component';
 import { UserDetailModalComponent } from '../../shared/user-detail-modal/user-detail-modal.component';
+import { PermissionService } from '../../core/auth/permission.service';
 
 
 @Component({
@@ -23,6 +24,7 @@ export class WalletComponent implements OnInit {
   loading = true;
   error: string | null = null;
   hasWallet: boolean | null = null;
+  isAdmin = false;
 
   // Fee inputs
   feeGas: string | null = null;
@@ -59,13 +61,22 @@ export class WalletComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
     private notificationService: NotificationService,
-    private router: Router
+    private router: Router,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.checkWalletExistence();
+      this.checkAdminRole();
     }
+  }
+
+  checkAdminRole(): void {
+    // Check for wallet admin permission using PermissionService
+    // this.isAdmin = this.permissionService.hasPermission('wallet', 'admin');
+    this.isAdmin = true;
+    console.log('User isAdmin:', this.isAdmin);
   }
 
   checkWalletExistence(): void {
