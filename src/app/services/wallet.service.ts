@@ -22,6 +22,19 @@ export interface RelayerCheckResponse {
   data: boolean;
 }
 
+export interface WalletStatusData {
+  hasWallet: boolean;
+  hasPin: boolean;
+  address: string | null;
+  walletStatus: string | null;
+}
+
+export interface WalletStatusResponse {
+  status: number;
+  message: string;
+  data: WalletStatusData;
+}
+
 export interface PinRequest {
   pin: string;
   confirmPin: string;
@@ -38,12 +51,12 @@ export class WalletService {
   private get transferUrl() { return `${getBaseUrl()}/wl/blockchain/transfer`; }
   private get grantRevokeRelayerUrl() { return `${getBaseUrl()}/wl/relayer`; }
   private get createUrl() { return `${getBaseUrl()}/wl/create`; }
-  private get checkWalletExistsUrl() { return `${getBaseUrl()}/wl/exists`; }
+  private get walletStatusUrl() { return `${getBaseUrl()}/wl/status`; }
 
   constructor(private http: HttpClient) {}
 
-  checkWalletExists(): Observable<RelayerCheckResponse> {
-    return this.http.get<RelayerCheckResponse>(this.checkWalletExistsUrl);
+  getWalletStatus(): Observable<WalletStatusResponse> {
+    return this.http.get<WalletStatusResponse>(this.walletStatusUrl);
   }
 
   getWalletInfo(): Observable<WalletResponse> {

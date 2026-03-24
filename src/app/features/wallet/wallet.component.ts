@@ -1,7 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WalletService, WalletData, RelayerCheckResponse } from '../../services/wallet.service';
+import { Router } from '@angular/router';
+import { WalletService, WalletData, WalletStatusResponse, RelayerCheckResponse } from '../../services/wallet.service';
 import { NotificationService } from '../../services/notification.service';
 import { TransactionHistoryComponent } from '../transaction-history/transaction-history.component';
 import { UserDetailModalComponent } from '../../shared/user-detail-modal/user-detail-modal.component';
@@ -57,7 +58,8 @@ export class WalletComponent implements OnInit {
     private walletService: WalletService,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -68,25 +70,30 @@ export class WalletComponent implements OnInit {
 
   checkWalletExistence(): void {
     this.loading = true;
-    this.walletService.checkWalletExists().subscribe({
-      next: (response) => {
+    this.walletService.getWalletStatus().subscribe({
+      next: (response: WalletStatusResponse) => {
         if (response.status === 200) {
-          this.hasWallet = response.data;
-          if (this.hasWallet) {
+          const status = response.data;
+          this.hasWallet = status.hasWallet;
+          
+          if (status.hasWallet && status.hasPin) {
+            // Đã có ví và đã có PIN -> Load dữ liệu bình thường
             this.fetchWalletData();
             this.fetchFee();
           } else {
+            // Chưa có ví HOẶC đã có ví nhưng chưa có PIN -> Điều hướng sang trang tạo PIN
+            this.router.navigate(['/pin']);
             this.loading = false;
           }
         } else {
-          this.error = response.message || 'Lỗi kiểm tra ví';
+          this.error = response.message || 'Lỗi kiểm tra trạng thái ví';
           this.loading = false;
         }
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error checking wallet exists:', err);
-        this.error = 'Không thể kiểm tra trạng thái ví. Vui lòng thử lại sau.';
+        console.error('Error checking wallet status:', err);
+        this.error = 'Không thể kết nối tới server. Vui lòng thử lại sau.';
         this.loading = false;
         this.cdr.detectChanges();
       }

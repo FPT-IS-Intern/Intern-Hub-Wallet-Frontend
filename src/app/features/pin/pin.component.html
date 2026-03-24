@@ -3,16 +3,18 @@
     <div class="pin-card group">
       <!-- Decorative Element -->
       <div class="decorative-blob"></div>
-      
+
       <div class="card-content">
         <!-- Logo/Icon area -->
         <div class="header-section">
           <div class="logo-box">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h1 class="page-title">Bảo Mật Ví</h1>
+          <h1 class="page-title">Tạo mã pin</h1>
           <p class="page-subtitle">Vui lòng thiết lập mã PIN 6 số để bảo vệ tài khoản ví của bạn.</p>
         </div>
 
@@ -20,61 +22,46 @@
         <form (ngSubmit)="onSubmit()" class="pin-form">
           <div class="form-groups-container">
             <div class="form-control">
-              <label class="input-label">Mã PIN mới</label>
+              <label class="input-label">Mã PIN</label>
               <div class="input-wrapper">
-                <input 
-                  type="password" 
-                  [(ngModel)]="pin" 
-                  (ngModelChange)="onPinChange('pin')"
-                  (keypress)="blockNonNumeric($event)"
-                  name="pin"
-                  maxlength="6"
-                  inputmode="numeric"
-                  placeholder="••••••"
-                  class="pin-input"
-                >
+                <input type="password" [(ngModel)]="pin" (ngModelChange)="onPinChange('pin')"
+                  (keypress)="blockNonNumeric($event)" name="pin" maxlength="6" inputmode="numeric" placeholder="••••••"
+                  class="pin-input">
               </div>
             </div>
 
             <div class="form-control">
               <label class="input-label">Xác nhận mã PIN</label>
               <div class="input-wrapper">
-                <input 
-                  type="password" 
-                  [(ngModel)]="confirmPin" 
-                  (ngModelChange)="onPinChange('confirmPin')"
-                  (keypress)="blockNonNumeric($event)"
-                  name="confirmPin"
-                  maxlength="6"
-                  inputmode="numeric"
-                  placeholder="••••••"
-                  class="pin-input"
-                >
+                <input type="password" [(ngModel)]="confirmPin" (ngModelChange)="onPinChange('confirmPin')"
+                  (keypress)="blockNonNumeric($event)" name="confirmPin" maxlength="6" inputmode="numeric"
+                  placeholder="••••••" class="pin-input">
               </div>
             </div>
           </div>
 
-          <button 
-            type="submit"
-            [disabled]="loading"
-            class="submit-button"
-          >
+          <button type="submit" [disabled]="loading" class="submit-button">
             <div class="button-content">
-              <svg *ngIf="loading" class="spinner-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg *ngIf="loading" class="spinner-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
                 <circle class="spinner-circle" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="spinner-path" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="spinner-path" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
               </svg>
-              <span class="button-text">{{ loading ? 'Đang khởi tạo ví...' : 'Tạo Ví Ngay' }}</span>
+              <span class="button-text">{{ loading ? 'Đang khởi tạo ví...' : 'Tạo' }}</span>
             </div>
           </button>
         </form>
 
         <!-- Extra info -->
         <div class="security-info">
-          <svg xmlns="http://www.w3.org/2000/svg" class="security-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="security-icon" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          <span class="security-text">Bảo mật đa lớp tiêu chuẩn quân đội</span>
+          <span class="security-text">Bảo mật đa lớp tiêu chuẩn</span>
         </div>
       </div>
     </div>

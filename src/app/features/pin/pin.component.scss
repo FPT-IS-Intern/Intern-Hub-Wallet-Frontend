@@ -1,11 +1,11 @@
 .pin-page-container {
   min-height: 100vh;
-  background-color: #FCF4E0;
+  background-color: #fbecda;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  font-family: sans-serif;
+  font-family: 'Inter', sans-serif;
   color: #4A4A4A;
 }
 
@@ -78,10 +78,10 @@
 }
 
 .page-title {
-  font-size: 1.875rem;
+  font-size: 24px;
   font-weight: 800;
-  color: #78350F; // text-amber-900
-  letter-spacing: -0.025em;
+  color: #e2850c;
+  letter-spacing: -0.04em;
   margin-bottom: 0.5rem;
 }
 
@@ -112,10 +112,10 @@
 .input-label {
   display: block;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #9CA3AF;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   margin-left: 0.25rem;
 }
 
@@ -131,7 +131,7 @@
   border-radius: 1rem; // rounded-2xl
   font-size: 1.5rem;
   letter-spacing: 0.5em;
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
   text-align: center;
   transition: all 0.2s;
 
