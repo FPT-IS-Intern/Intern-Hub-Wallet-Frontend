@@ -75,14 +75,14 @@ export class WalletComponent implements OnInit {
         if (response.status === 200) {
           const status = response.data;
           this.hasWallet = status.hasWallet;
-          
+
           if (status.hasWallet && status.hasPin) {
             // Đã có ví và đã có PIN -> Load dữ liệu bình thường
             this.fetchWalletData();
             this.fetchFee();
           } else {
             // Chưa có ví HOẶC đã có ví nhưng chưa có PIN -> Điều hướng sang trang tạo PIN
-            this.router.navigate(['/pin']);
+            this.router.navigate(['/wallet/pin']);
             this.loading = false;
           }
         } else {
@@ -361,7 +361,7 @@ export class WalletComponent implements OnInit {
     if (this.historyComponent) {
       this.historyComponent.fetchTransactions();
     }
-    
+
     // Reset inputs
     this.newFeeAmount = '';
     this.recipientAddress = '';

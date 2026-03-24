@@ -21,7 +21,7 @@ export class PinComponent {
     private walletService: WalletService,
     private notificationService: NotificationService,
     private router: Router
-  ) {}
+  ) { }
 
   onPinChange(field: 'pin' | 'confirmPin'): void {
     this[field] = this[field].replace(/[^\d]/g, '');
