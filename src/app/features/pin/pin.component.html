@@ -31,7 +31,7 @@
             </div>
 
             <div class="form-control">
-              <label class="input-label">Xác nhận mã PIN</label>
+              <label class="input-label">Nhập lại mã PIN</label>
               <div class="input-wrapper">
                 <input type="password" [(ngModel)]="confirmPin" (ngModelChange)="onPinChange('confirmPin')"
                   (keypress)="blockNonNumeric($event)" name="confirmPin" maxlength="6" inputmode="numeric"
