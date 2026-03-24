@@ -519,7 +519,7 @@
   color: #d97706;
 }
 
-// Operations Grid
+// Operations Grid 
 .operations-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -531,7 +531,7 @@
   }
 
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr); // admin thi 3
   }
 }
 
