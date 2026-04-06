@@ -75,7 +75,7 @@ export class WalletComponent implements OnInit {
 
   checkAdminRole(): void {
     // Check for wallet admin permission using PermissionService
-    this.isAdmin = this.permissionService.hasPermission('quan_ly_vi', 'create');
+    this.isAdmin = this.permissionService.hasPermission('quan-ly-vi', 'create');
     console.log('User isAdmin:', this.isAdmin);
   }
 
