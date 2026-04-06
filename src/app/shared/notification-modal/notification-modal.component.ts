@@ -16,6 +16,7 @@ export class NotificationModalComponent {
 
   // Reset input when modal opens
   private _resetOnShow = effect(() => {
+    console.log('NotificationModalComponent: State changed', this.state());
     if (this.state().show) {
       this.inputValue.set('');
     }

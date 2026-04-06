@@ -36,16 +36,19 @@ export class PinComponent {
 
   onSubmit(): void {
     if (!this.pin || !this.confirmPin) {
+      console.log('PinComponent: Missing PIN fields');
       this.notificationService.showWarning('Thông báo', 'Vui lòng nhập đầy đủ mã PIN.');
       return;
     }
 
     if (this.pin !== this.confirmPin) {
+      console.log('PinComponent: PIN mismatch');
       this.notificationService.showError('Lỗi', 'Mã PIN không khớp nhau.');
       return;
     }
 
     if (this.pin.length < 6) {
+      console.log('PinComponent: PIN too short');
       this.notificationService.showError('Lỗi', 'Mã PIN phải có ít nhất 6 chữ số.');
       return;
     }
@@ -73,8 +76,8 @@ export class PinComponent {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error creating wallet:', err);
-        const errorMsg = err.error?.message || 'Có lỗi xảy ra khi tạo ví. Vui lòng thử lại sau.';
+        console.error('PinComponent: Error creating wallet', err);
+        const errorMsg = err.error?.message || err.message || 'Có lỗi xảy ra khi tạo ví. Vui lòng thử lại sau.';
         this.notificationService.showError('Lỗi', errorMsg);
         this.loading = false;
       }
