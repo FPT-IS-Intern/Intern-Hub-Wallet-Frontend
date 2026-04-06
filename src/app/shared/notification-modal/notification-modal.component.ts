@@ -14,14 +14,9 @@ export class NotificationModalComponent {
   state = this.notificationService.state;
   inputValue = signal('');
 
-  constructor() {
-    console.log('NotificationModalComponent (Wallet): Created and Initialized!');
-  }
-
   @HostListener('window:WINDOW_NOTIFICATION', ['$event'])
   onWindowNotification(event: any) {
     const newState = event.detail as NotificationState;
-    console.log('NotificationModalComponent (Wallet): Received window event', newState);
     if (newState) {
       this.notificationService.state.set(newState);
     }
@@ -29,7 +24,6 @@ export class NotificationModalComponent {
 
   // Reset input when modal opens
   private _resetOnShow = effect(() => {
-    console.log('NotificationModalComponent (Wallet): State changed', this.state());
     if (this.state().show) {
       this.inputValue.set('');
     }

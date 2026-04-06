@@ -35,7 +35,6 @@ export class NotificationService {
     onConfirm?: () => void,
     autoClose: boolean = false
   ) {
-    console.log('NotificationService: showSuccess triggered', { title, message });
     this.clearTimer();
     const newState: NotificationState = {
       show: true,
@@ -63,7 +62,6 @@ export class NotificationService {
     onConfirm?: () => void,
     onCancel?: () => void
   ) {
-    console.log('NotificationService: showError triggered', { title, message });
     this.clearTimer();
     const newState: NotificationState = {
       show: true,
@@ -88,7 +86,6 @@ export class NotificationService {
     onConfirm?: () => void,
     onCancel?: () => void
   ) {
-    console.log('NotificationService: showConfirm triggered', { title, message });
     this.clearTimer();
     const newState: NotificationState = {
       show: true,
@@ -113,7 +110,6 @@ export class NotificationService {
     onConfirm?: () => void,
     onCancel?: () => void
   ) {
-    console.log('NotificationService: showWarning triggered', { title, message });
     this.clearTimer();
     const newState: NotificationState = {
       show: true,
@@ -139,7 +135,6 @@ export class NotificationService {
     onConfirm?: (value?: string) => void,
     onCancel?: () => void
   ) {
-    console.log('NotificationService: showInput triggered', { title, message });
     this.clearTimer();
     const newState: NotificationState = {
       show: true,
@@ -159,7 +154,6 @@ export class NotificationService {
   }
 
   close() {
-    console.log('NotificationService: close triggered');
     this.clearTimer();
     this.state.update(s => ({ ...s, show: false }));
     this.dispatchToWindow({ show: false } as any);
