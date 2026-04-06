@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WalletService, PinRequest } from '../../services/wallet.service';
 import { NotificationService } from '../../services/notification.service';
+import { NotificationModalComponent } from '../../shared/notification-modal/notification-modal.component';
 
 @Component({
   selector: 'app-pin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationModalComponent],
   templateUrl: './pin.component.html',
   styleUrl: './pin.component.scss'
 })

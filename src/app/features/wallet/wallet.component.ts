@@ -8,11 +8,12 @@ import { TransactionHistoryComponent } from '../transaction-history/transaction-
 import { UserDetailModalComponent } from '../../shared/user-detail-modal/user-detail-modal.component';
 import { PermissionService } from '../../core/auth/permission.service';
 
+import { NotificationModalComponent } from '../../shared/notification-modal/notification-modal.component';
 
 @Component({
   selector: 'app-wallet',
   standalone: true,
-  imports: [CommonModule, FormsModule, TransactionHistoryComponent, UserDetailModalComponent],
+  imports: [CommonModule, FormsModule, TransactionHistoryComponent, UserDetailModalComponent, NotificationModalComponent],
 
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.scss'
