@@ -314,9 +314,9 @@
           <div class="input-group">
             <label class="input-label">Chọn người dùng</label>
             <select [(ngModel)]="selectedUserId" class="op-input op-select" [disabled]="isLoadingUsers">
-              <option value="">{{ isLoadingUsers ? 'Đang tải...' : '--- Chọn người dùng ---' }}</option>
+              <option value="">{{ isLoadingUsers ? 'Đang tải...' : 'Chọn người dùng' }}</option>
               <option *ngFor="let user of availableUsers" [value]="user.userId">
-                {{ user.username }} {{ user.email ? '(' + user.email + ')' : '' }}
+                {{ user.username }} {{ user.email ? ' - ' + user.email : '' }}
               </option>
             </select>
           </div>

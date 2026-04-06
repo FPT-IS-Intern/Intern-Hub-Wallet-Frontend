@@ -79,6 +79,7 @@ export class WalletComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.checkWalletExistence();
       this.checkAdminRole();
+      this.performUserSearch('', 50);
     }
 
     this.searchSubject.pipe(
@@ -265,14 +266,17 @@ export class WalletComponent implements OnInit {
     this.searchSubject.next(keyword);
   }
 
-  performUserSearch(keyword: string): void {
-    if (!keyword || keyword.trim().length < 2) {
-      this.availableUsers = [];
+  performUserSearch(keyword: string, size: number = 20): void {
+    if (keyword !== '' && keyword.trim().length < 2) {
+      // Don't clear if it's already showing the default list
+      if (this.availableUsers.length === 0) {
+        this.availableUsers = [];
+      }
       return;
     }
 
     this.isLoadingUsers = true;
-    this.userService.getUsers(keyword).subscribe({
+    this.userService.getUsers(keyword, 0, size).subscribe({
       next: (response) => {
         if (response && response.data) {
           this.availableUsers = response.data.items || [];
