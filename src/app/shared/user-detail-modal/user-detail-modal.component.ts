@@ -15,7 +15,7 @@ export class UserDetailModalComponent {
   @Input() show = false;
   @Output() close = new EventEmitter<void>();
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(private notificationService: NotificationService) { }
 
   onClose(): void {
     this.close.emit();
@@ -31,7 +31,6 @@ export class UserDetailModalComponent {
     navigator.clipboard.writeText(text).then(() => {
       this.notificationService.showSuccess('Thành công', message);
     }).catch(err => {
-      console.error('Could not copy text: ', err);
       this.notificationService.showError('Lỗi', 'Không thể copy địa chỉ.');
     });
   }

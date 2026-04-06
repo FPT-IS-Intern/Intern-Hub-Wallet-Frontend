@@ -48,11 +48,30 @@
     <h3 class="modal-title">{{ state().title }}</h3>
     <p class="modal-message">{{ state().message }}</p>
 
+    <!-- INPUT SECTION -->
+    <div *ngIf="state().showInput" class="modal-input-section">
+      <textarea 
+        [placeholder]="state().inputPlaceholder || 'Nhập nội dung...'"
+        [value]="inputValue()"
+        (input)="inputValue.set($any($event.target).value)"
+        class="modal-textarea"
+        rows="3">
+      </textarea>
+    </div>
+
+    <!-- COUNTDOWN FOR AUTO-CLOSE -->
+    <div *ngIf="notificationService.countdown() > 0" class="countdown-timer">
+      <div class="timer-bar">
+        <div class="timer-progress" [style.width.%]="(notificationService.countdown() / 3) * 100"></div>
+      </div>
+      <p class="timer-text">Đóng sau <span>{{ notificationService.countdown() }}s</span>...</p>
+    </div>
+
     <!-- BUTTONS -->
     <div class="button-row">
       <!-- 2 Buttons -->
       <ng-container *ngIf="state().type === 'error' || state().type === 'confirm' || state().type === 'warning'">
-        <button (click)="onCancel()" class="btn-cancel">
+        <button *ngIf="state().cancelText" (click)="onCancel()" class="btn-cancel">
           {{ state().cancelText }}
         </button>
         <button *ngIf="state().type === 'error'" (click)="onConfirm()" class="btn-confirm error-btn">

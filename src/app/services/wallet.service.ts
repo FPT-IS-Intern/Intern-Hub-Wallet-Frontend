@@ -100,6 +100,10 @@ export class WalletService {
     return this.http.get<WalletResponse>(`${getBaseUrl()}/wl/user/${address}`);
   }
 
+  getUserInfoByUserId(userId: string | number): Observable<WalletResponse> {
+    return this.http.get<WalletResponse>(`${getBaseUrl()}/wl/user/${userId}`);
+  }
+
   createWallet(request: PinRequest): Observable<any> {
     return this.http.post(this.createUrl, request);
   }

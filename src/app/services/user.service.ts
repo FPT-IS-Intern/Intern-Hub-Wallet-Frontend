@@ -1,0 +1,52 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { getBaseUrl } from '../core/config/app-config';
+
+export interface User {
+  id: string;
+  userId: string;
+  username: string;
+  email?: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserService {
+  private http = inject(HttpClient);
+  private get apiUrl() { return `${getBaseUrl()}/pm/users`; }
+
+  getUsers(keyword: string = '', page: number = 0, size: number = 20): Observable<any> {
+    const body: any = {};
+
+    if (keyword && keyword.trim()) {
+      body.keyword = keyword.trim();
+    }
+
+    const params = new HttpParams()
+      .set('page', String(page))
+      .set('size', String(size));
+
+    return this.http.post<any>(`${this.apiUrl}/filter`, body, { params })
+      .pipe(
+        map(response => {
+          if (response && response.data && response.data.items) {
+            return {
+              ...response,
+              data: {
+                ...response.data,
+                items: response.data.items.map((item: any) => ({
+                  id: String(item.userId),
+                  userId: String(item.userId),
+                  username: item.fullName,
+                  email: item.email
+                }))
+              }
+            };
+          }
+          return response;
+        })
+      );
+  }
+}

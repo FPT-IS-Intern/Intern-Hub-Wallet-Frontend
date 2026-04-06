@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WalletService, PinRequest } from '../../services/wallet.service';
 import { NotificationService } from '../../services/notification.service';
+import { NotificationModalComponent } from '../../shared/notification-modal/notification-modal.component';
 
 @Component({
   selector: 'app-pin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationModalComponent],
   templateUrl: './pin.component.html',
   styleUrl: './pin.component.scss'
 })
@@ -59,16 +60,21 @@ export class PinComponent {
     this.walletService.createWallet(request).subscribe({
       next: (response) => {
         if (response.status === 200 || response.status === undefined) {
-          this.notificationService.showSuccess('Thành công', 'Thành công. Địa chỉ ví: ' + response.data);
-          this.router.navigate(['/wallet']);
+          this.notificationService.showSuccess(
+            'Thành công',
+            'Đã tạo ví và mã PIN thành công.',
+            'Đồng ý',
+            () => {
+              this.router.navigate(['/wallet']);
+            }
+          );
         } else {
           this.notificationService.showError('Thất bại', response.message || 'Tạo ví không thành công.');
         }
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error creating wallet:', err);
-        const errorMsg = err.error?.message || 'Có lỗi xảy ra khi tạo ví. Vui lòng thử lại sau.';
+        const errorMsg = err.error?.message || err.message || 'Có lỗi xảy ra khi tạo ví. Vui lòng thử lại sau.';
         this.notificationService.showError('Lỗi', errorMsg);
         this.loading = false;
       }

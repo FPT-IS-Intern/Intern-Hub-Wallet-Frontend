@@ -8,11 +8,14 @@ import { TransactionHistoryComponent } from '../transaction-history/transaction-
 import { UserDetailModalComponent } from '../../shared/user-detail-modal/user-detail-modal.component';
 import { PermissionService } from '../../core/auth/permission.service';
 
+import { NotificationModalComponent } from '../../shared/notification-modal/notification-modal.component';
+import { UserService, User } from '../../services/user.service';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-wallet',
   standalone: true,
-  imports: [CommonModule, FormsModule, TransactionHistoryComponent, UserDetailModalComponent],
+  imports: [CommonModule, FormsModule, TransactionHistoryComponent, UserDetailModalComponent, NotificationModalComponent],
 
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.scss'
@@ -51,7 +54,13 @@ export class WalletComponent implements OnInit {
   updatingRelayer = false;
 
   // User wallet search
-  searchUserAddress = '';
+  searchUserAddress = ''; // Legacy, fallback
+  searchUserKeyword = '';
+  availableUsers: User[] = [];
+  selectedUserId: string = '';
+  isLoadingUsers = false;
+  private searchSubject = new Subject<string>();
+
   searchResultData: WalletData | null = null;
   searchingUser = false;
   showUserDetailModal = false;
@@ -62,21 +71,27 @@ export class WalletComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private notificationService: NotificationService,
     private router: Router,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.checkWalletExistence();
       this.checkAdminRole();
+      this.performUserSearch('', 50);
     }
+
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(keyword => {
+      this.performUserSearch(keyword);
+    });
   }
 
   checkAdminRole(): void {
-    // Check for wallet admin permission using PermissionService
-    this.isAdmin = this.permissionService.hasPermission('wallet', 'admin');
-    // this.isAdmin = true;
-    console.log('User isAdmin:', this.isAdmin);
+    this.isAdmin = this.permissionService.hasPermission('quan-ly-vi', 'create');
   }
 
   checkWalletExistence(): void {
@@ -88,11 +103,9 @@ export class WalletComponent implements OnInit {
           this.hasWallet = status.hasWallet;
 
           if (status.hasWallet && status.hasPin) {
-            // Đã có ví và đã có PIN -> Load dữ liệu bình thường
             this.fetchWalletData();
             this.fetchFee();
           } else {
-            // Chưa có ví HOẶC đã có ví nhưng chưa có PIN -> Điều hướng sang trang tạo PIN
             this.router.navigate(['/wallet/pin']);
             this.loading = false;
           }
@@ -103,7 +116,6 @@ export class WalletComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error checking wallet status:', err);
         this.error = 'Không thể kết nối tới server. Vui lòng thử lại sau.';
         this.loading = false;
         this.cdr.detectChanges();
@@ -183,7 +195,6 @@ export class WalletComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error updating fee:', err);
         const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API cấu hình phí.';
         this.notificationService.showError('Lỗi', errorMsg);
         this.updatingFee = false;
@@ -215,7 +226,6 @@ export class WalletComponent implements OnInit {
         this.clearInputsAndRefresh();
       },
       error: (err) => {
-        console.error('Error checking relayer permission:', err);
         const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API. Vui lòng kiểm tra console.';
         this.notificationService.showError('Lỗi', errorMsg);
         this.checkingRelayer = false;
@@ -243,10 +253,39 @@ export class WalletComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error updating relayer permission:', err);
         const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API.';
         this.notificationService.showError('Lỗi', errorMsg);
         this.updatingRelayer = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onUserSearchChange(event: any): void {
+    const keyword = event.target.value;
+    this.searchSubject.next(keyword);
+  }
+
+  performUserSearch(keyword: string, size: number = 20): void {
+    if (keyword !== '' && keyword.trim().length < 2) {
+      // Don't clear if it's already showing the default list
+      if (this.availableUsers.length === 0) {
+        this.availableUsers = [];
+      }
+      return;
+    }
+
+    this.isLoadingUsers = true;
+    this.userService.getUsers(keyword, 0, size).subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          this.availableUsers = response.data.items || [];
+        }
+        this.isLoadingUsers = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoadingUsers = false;
         this.cdr.detectChanges();
       }
     });
@@ -283,7 +322,6 @@ export class WalletComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error transferring RT:', err);
         const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API chuyển Token.';
         this.notificationService.showError('Lỗi', errorMsg);
         this.transferringRT = false;
@@ -298,18 +336,13 @@ export class WalletComponent implements OnInit {
   }
 
   fetchUserDetailInfo(): void {
-    if (!this.searchUserAddress) {
-      this.notificationService.showWarning('Thông báo', 'Vui lòng nhập địa chỉ ví cần tra cứu.');
-      return;
-    }
-
-    if (!this.isValidAddress(this.searchUserAddress)) {
-      this.notificationService.showWarning('Thông báo', 'Địa chỉ ví không hợp lệ. Vui lòng nhập địa chỉ ví bắt đầu bằng 0x và có 42 ký tự.');
+    if (!this.selectedUserId) {
+      this.notificationService.showWarning('Thông báo', 'Vui lòng chọn người dùng cần tra cứu.');
       return;
     }
 
     this.searchingUser = true;
-    this.walletService.getUserInfoByAddress(this.searchUserAddress).subscribe({
+    this.walletService.getUserInfoByUserId(this.selectedUserId).subscribe({
       next: (response) => {
         if (response.status === 200) {
           this.searchResultData = response.data;
@@ -317,13 +350,12 @@ export class WalletComponent implements OnInit {
           this.clearInputsAndRefresh();
         } else {
           this.searchResultData = null;
-          this.notificationService.showError('Thất bại', response.message || 'Không tìm thấy thông tin ví cho địa chỉ này.');
+          this.notificationService.showError('Thất bại', response.message || 'Không tìm thấy thông tin ví cho người dùng này.');
         }
         this.searchingUser = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error fetching user detail info:', err);
         this.searchResultData = null;
         const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API tra cứu.';
         this.notificationService.showError('Lỗi', errorMsg);
@@ -353,7 +385,6 @@ export class WalletComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error minting BT:', err);
         const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API Mint BT.';
         this.notificationService.showError('Lỗi', errorMsg);
         this.mintingBT = false;

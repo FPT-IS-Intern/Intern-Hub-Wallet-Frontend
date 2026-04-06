@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificationService } from '../../services/notification.service';
+import { NotificationService, NotificationState } from '../../services/notification.service';
 
 @Component({
   selector: 'app-notification-modal',
@@ -11,13 +11,28 @@ import { NotificationService } from '../../services/notification.service';
 })
 export class NotificationModalComponent {
   notificationService = inject(NotificationService);
-
   state = this.notificationService.state;
+  inputValue = signal('');
+
+  @HostListener('window:WINDOW_NOTIFICATION', ['$event'])
+  onWindowNotification(event: any) {
+    const newState = event.detail as NotificationState;
+    if (newState) {
+      this.notificationService.state.set(newState);
+    }
+  }
+
+  // Reset input when modal opens
+  private _resetOnShow = effect(() => {
+    if (this.state().show) {
+      this.inputValue.set('');
+    }
+  }, { allowSignalWrites: true });
 
   onConfirm() {
     const currentState = this.state();
     if (currentState.onConfirm) {
-      currentState.onConfirm();
+      currentState.onConfirm(this.inputValue());
     }
     this.notificationService.close();
   }

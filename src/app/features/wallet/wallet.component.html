@@ -298,11 +298,30 @@
 
         <div class="op-space-y">
           <div class="input-group">
-            <label class="input-label">Địa chỉ ví người dùng (Address)</label>
-            <input type="text" [(ngModel)]="searchUserAddress" placeholder="Nhập địa chỉ ví cần tra cứu..."
-              class="op-input font-mono">
+            <label class="input-label">Tìm kiếm người dùng</label>
+            <div class="search-wrapper">
+              <input type="text" (input)="onUserSearchChange($event)" placeholder="Nhập tên hoặc email người dùng..."
+                class="op-input search-input">
+              <div class="search-icon-inside">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+            </div>
           </div>
-          <button (click)="fetchUserDetailInfo()" [disabled]="searchingUser"
+
+          <div class="input-group">
+            <label class="input-label">Chọn người dùng</label>
+            <select [(ngModel)]="selectedUserId" class="op-input op-select" [disabled]="isLoadingUsers">
+              <option value="">{{ isLoadingUsers ? 'Đang tải...' : 'Chọn người dùng' }}</option>
+              <option *ngFor="let user of availableUsers" [value]="user.userId">
+                {{ user.username }} {{ user.email ? ' - ' + user.email : '' }}
+              </option>
+            </select>
+          </div>
+
+          <button (click)="fetchUserDetailInfo()" [disabled]="searchingUser || !selectedUserId"
             class="submit-op-btn primary-amber user-detail-btn">
             <svg *ngIf="searchingUser" class="spinner-svg-inline" xmlns="http://www.w3.org/2000/svg" fill="none"
               viewBox="0 0 24 24">
@@ -461,3 +480,5 @@
   <app-user-detail-modal [walletData]="searchResultData" [show]="showUserDetailModal"
     (close)="showUserDetailModal = false"></app-user-detail-modal>
 </div>
+
+<app-notification-modal></app-notification-modal>
