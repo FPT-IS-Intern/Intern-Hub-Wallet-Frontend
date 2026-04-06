@@ -65,7 +65,7 @@ export class PinComponent {
         if (response.status === 200 || response.status === undefined) {
           this.notificationService.showSuccess(
             'Thành công',
-            'Đã tạo ví và mã PIN thành công. Địa chỉ ví: ' + response.data,
+            'Đã tạo ví và mã PIN thành công.',
             'Đồng ý',
             () => {
               this.router.navigate(['/wallet']);
