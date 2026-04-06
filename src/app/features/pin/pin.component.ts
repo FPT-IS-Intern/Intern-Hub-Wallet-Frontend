@@ -59,8 +59,14 @@ export class PinComponent {
     this.walletService.createWallet(request).subscribe({
       next: (response) => {
         if (response.status === 200 || response.status === undefined) {
-          this.notificationService.showSuccess('Thành công', 'Thành công. Địa chỉ ví: ' + response.data);
-          this.router.navigate(['/wallet']);
+          this.notificationService.showSuccess(
+            'Thành công',
+            'Đã tạo ví và mã PIN thành công. Địa chỉ ví: ' + response.data,
+            'Đồng ý',
+            () => {
+              this.router.navigate(['/wallet']);
+            }
+          );
         } else {
           this.notificationService.showError('Thất bại', response.message || 'Tạo ví không thành công.');
         }

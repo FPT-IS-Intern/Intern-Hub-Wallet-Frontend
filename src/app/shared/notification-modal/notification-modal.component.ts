@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
 
@@ -11,13 +11,20 @@ import { NotificationService } from '../../services/notification.service';
 })
 export class NotificationModalComponent {
   notificationService = inject(NotificationService);
-
   state = this.notificationService.state;
+  inputValue = signal('');
+
+  // Reset input when modal opens
+  private _resetOnShow = effect(() => {
+    if (this.state().show) {
+      this.inputValue.set('');
+    }
+  }, { allowSignalWrites: true });
 
   onConfirm() {
     const currentState = this.state();
     if (currentState.onConfirm) {
-      currentState.onConfirm();
+      currentState.onConfirm(this.inputValue());
     }
     this.notificationService.close();
   }
