@@ -44,6 +44,10 @@ export class WalletComponent implements OnInit {
   mintAmount = '';
   mintingBT = false;
 
+  // Exchange RT to BT
+  exchangeAmount = '';
+  exchangingRT = false;
+
   // Relayer check inputs
   checkAddress = '';
   relayerCheckResult: boolean | null = null;
@@ -393,6 +397,40 @@ export class WalletComponent implements OnInit {
     });
   }
 
+  onExchangeRT(): void {
+    const amount = Number(this.exchangeAmount);
+    if (!this.exchangeAmount || isNaN(amount) || amount <= 0) {
+      this.notificationService.showWarning('Thông báo', 'Vui lòng nhập số lượng RT hợp lệ (lớn hơn 0).');
+      return;
+    }
+
+    if (this.walletData && amount > parseFloat(this.walletData.rt)) {
+      this.notificationService.showWarning('Thông báo', 'Số dư RT không đủ để thực hiện chuyển đổi.');
+      return;
+    }
+
+    this.exchangingRT = true;
+    this.walletService.exchangeRT(amount).subscribe({
+      next: (response) => {
+        if (response.status === 200) {
+          this.notificationService.showSuccess('Thành công', response.message || 'Chuyển đổi RT sang BT thành công');
+          this.fetchWalletData();
+          this.clearInputsAndRefresh();
+        } else {
+          this.notificationService.showError('Thất bại', response.message || 'Chuyển đổi không thành công.');
+        }
+        this.exchangingRT = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        const errorMsg = err.error?.message || 'Có lỗi xảy ra khi gọi API chuyển đổi.';
+        this.notificationService.showError('Lỗi', errorMsg);
+        this.exchangingRT = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   formatBalance(value: string): string {
     if (!value) return '0';
     return parseFloat(value).toLocaleString();
@@ -409,6 +447,7 @@ export class WalletComponent implements OnInit {
     this.recipientAddress = '';
     this.transferAmount = '';
     this.mintAmount = '';
+    this.exchangeAmount = '';
     this.relayerAddress = '';
     this.checkAddress = '';
     this.searchUserAddress = '';

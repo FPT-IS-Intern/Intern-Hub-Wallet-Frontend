@@ -49,6 +49,7 @@ export class WalletService {
   private get mintUrl() { return `${getBaseUrl()}/wl/blockchain/mint`; }
   private get feeUrl() { return `${getBaseUrl()}/wl/blockchain/fee-gas`; }
   private get transferUrl() { return `${getBaseUrl()}/wl/blockchain/transfer`; }
+  private get exchangeUrl() { return `${getBaseUrl()}/wl/blockchain/exchange`; }
   private get grantRevokeRelayerUrl() { return `${getBaseUrl()}/wl/relayer`; }
   private get createUrl() { return `${getBaseUrl()}/wl/create`; }
   private get walletStatusUrl() { return `${getBaseUrl()}/wl/status`; }
@@ -86,6 +87,10 @@ export class WalletService {
       amount: amount
     };
     return this.http.post(this.transferUrl, payload);
+  }
+
+  exchangeRT(amount: number): Observable<any> {
+    return this.http.post(this.exchangeUrl, { amount: amount });
   }
 
   grantRevokeRelayer(address: string, allowed: boolean): Observable<any> {
