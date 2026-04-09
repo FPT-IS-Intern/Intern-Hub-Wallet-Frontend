@@ -175,7 +175,7 @@ export class WalletComponent implements OnInit {
 
   updateFee(): void {
     const feeValue = Number(this.newFeeAmount);
-    if (!this.newFeeAmount || isNaN(feeValue)) {
+    if (this.newFeeAmount === '' || this.newFeeAmount === null || isNaN(feeValue)) {
       this.notificationService.showWarning('Thông báo', 'Vui lòng nhập phần trăm phí hợp lệ (ví dụ: 20).');
       return;
     }
