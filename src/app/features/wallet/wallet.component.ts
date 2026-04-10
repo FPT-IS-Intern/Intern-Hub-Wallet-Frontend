@@ -436,6 +436,13 @@ export class WalletComponent implements OnInit {
     return parseFloat(value).toLocaleString();
   }
 
+  onNumberKeyDown(event: KeyboardEvent): void {
+    const forbiddenKeys = ['e', 'E', '+', '-'];
+    if (forbiddenKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   clearInputsAndRefresh(): void {
     // Trigger history refresh
     if (this.historyComponent) {

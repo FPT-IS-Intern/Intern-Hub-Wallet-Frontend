@@ -160,7 +160,7 @@
             <div class="edit-row">
               <div class="input-wrapper">
                 <input type="number" min="0" max="100" [(ngModel)]="newFeeAmount" placeholder="Ví dụ: 20"
-                  (wheel)="$event.preventDefault()" class="fee-input">
+                  (wheel)="$event.preventDefault()" (keydown)="onNumberKeyDown($event)" class="fee-input">
                 <div class="input-suffix">%</div>
               </div>
               <button (click)="updateFee()" [disabled]="updatingFee" class="save-fee-btn">
@@ -352,7 +352,7 @@
           <div class="input-group">
             <label class="input-label">Số lượng BT cần tạo</label>
             <input type="number" min="0.000001" step="any" [(ngModel)]="mintAmount" placeholder="0.0"
-              (wheel)="$event.preventDefault()" class="op-input font-mono">
+              (wheel)="$event.preventDefault()" (keydown)="onNumberKeyDown($event)" class="op-input font-mono">
           </div>
           <button (click)="onMintBT()" [disabled]="mintingBT" class="submit-op-btn primary-amber create-token">
             <svg *ngIf="mintingBT" class="spinner-svg-inline" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -388,7 +388,7 @@
           <div class="input-group">
             <label class="input-label">Số lượng RT</label>
             <input type="number" min="0.000001" step="any" [(ngModel)]="transferAmount" placeholder="0.0"
-              (wheel)="$event.preventDefault()" class="op-input">
+              (wheel)="$event.preventDefault()" (keydown)="onNumberKeyDown($event)" class="op-input">
           </div>
           <button (click)="onTransferRT()" [disabled]="transferringRT" class="submit-op-btn primary-amber">
             <svg *ngIf="transferringRT" class="spinner-svg-inline" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -488,7 +488,8 @@
           <div class="input-group">
             <label class="input-label">Số lượng RT cần chuyển đổi</label>
             <input type="number" min="0.000001" step="any" [(ngModel)]="exchangeAmount"
-              placeholder="Nhập số lượng > 0..." class="op-input">
+              placeholder="Nhập số lượng > 0..." (wheel)="$event.preventDefault()" (keydown)="onNumberKeyDown($event)"
+              class="op-input">
           </div>
           <button (click)="onExchangeRT()" [disabled]="exchangingRT" class="submit-op-btn primary-amber">
             <svg *ngIf="exchangingRT" class="spinner-svg-inline" xmlns="http://www.w3.org/2000/svg" fill="none"
