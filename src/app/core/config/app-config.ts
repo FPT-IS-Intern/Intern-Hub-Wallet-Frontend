@@ -3,14 +3,9 @@ import { environment } from '../../../environments/environment';
 export function getBaseUrl(): string {
   const shellEnv = (window as any).__env;
 
-  if (shellEnv && shellEnv.apiUrl) {
-    const url = shellEnv.apiUrl;
-
+  if (shellEnv && shellEnv.API_URL) {
+    const url = shellEnv.API_URL;
     return url.endsWith('/') ? url.slice(0, -1) : url;
-  }
-
-  if (typeof window !== 'undefined' && window.location.hostname.includes('bbtech.io.vn')) {
-    return 'https://internhub-v2.bbtech.io.vn/api';
   }
 
   // Fallback for independent development (non-shell mode)

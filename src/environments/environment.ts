@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  mfeBaseUrl: 'http://localhost:4200',
+  mfeBaseUrl: (window as any).__env?.mfeBaseUrl || 'http://localhost:4200',
 };
+
